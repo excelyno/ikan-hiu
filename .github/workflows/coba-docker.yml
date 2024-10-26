@@ -22,4 +22,4 @@ jobs:
       - name: Sync files to VPSyaitu dah
         run: |
           sudo apt-get install rsync
-          rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./ excel@35.198.232.90:/home/excel/ikan/
+          rsync -avz -e "sudo ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./ excel@35.198.232.90:/home/excel/ikan/

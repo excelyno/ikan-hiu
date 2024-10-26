@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           source: "docker-compose.yml"
-          target: "/path/to/your/project/directory/"
+          target: "/home/excel/ikan"
 
       - name: SSH to VPS and start Docker Compose
         uses: appleboy/ssh-action@v0.1.0
@@ -29,6 +29,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            cd /path/to/your/project/directory/
+            cd /home/excel/ikan
             sudo docker-compose down
             sudo docker-compose up -d

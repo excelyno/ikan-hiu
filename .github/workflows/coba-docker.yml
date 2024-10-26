@@ -1,4 +1,4 @@
-name: 'aws-s3-website'
+name: 'deploy-mysql-docker'
 on:
   push:
     branches: [ "main" ]
@@ -10,22 +10,30 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: prod
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-southeast-1 
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Remove existing content from S3 bucket
+    - name: Deploy to VPS
       run: |
-        aws s3 rm s3://ikan-hiu/ --recursive
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          # Pull latest MySQL image
+          docker pull mysql:latest
+          
+          # Check if mysql-container already exists
+          if [ "$(docker ps -a -q -f name=mysql-container)" ]; then
+            echo "MySQL container already exists. Restarting..."
+            docker rm -f mysql-container
+          fi
 
-    - name: Sync new content to S3 bucket
-      run: |
-        aws s3 cp --recursive . s3://ikan-hiu/
+          # Run MySQL container with port mapping
+          docker run --rm --name mysql-container \
+            -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            -p 3306:3306 \
+            -d mysql:latest
+        EOF

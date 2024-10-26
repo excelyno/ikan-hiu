@@ -19,14 +19,6 @@ jobs:
         docker pull wordpress:latest
         docker pull nginx:latest
 
-        # Stop and remove existing containers (if any)
-        docker stop mysql-container || true
-        docker rm mysql-container || true
-        docker stop wordpress-container || true
-        docker rm wordpress-container || true
-        docker stop nginx-container || true
-        docker rm nginx-container || true
-
         # Run the MySQL container
         docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -d mysql:latest
 

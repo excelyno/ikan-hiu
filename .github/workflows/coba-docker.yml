@@ -22,7 +22,7 @@ jobs:
         docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -d mysql:latest
 
         # Run the Nginx container
-        docker run --name nginx-container -p 8080:8080 -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
+        docker run --name nginx-container -p 80:8080 -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
 
         # Create an Nginx configuration file
         sudo echo "server {

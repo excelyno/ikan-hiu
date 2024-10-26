@@ -25,7 +25,7 @@ jobs:
         docker run --name nginx-container -p 8080:8080 -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
 
         # Create an Nginx configuration file
-        echo "server {
+        sudo echo "server {
             listen 80;
             server_name your_domain_or_IP;
 

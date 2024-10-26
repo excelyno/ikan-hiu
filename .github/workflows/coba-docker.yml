@@ -1,39 +1,20 @@
 name: 'deploy-mysql-docker'
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted] # Menunjukkan bahwa ini harus berjalan di self-hosted runner
     steps:
-    - name: Checkout code
+    - name: Checkout code bosa ga
       uses: actions/checkout@v2
-
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Deploy to VPS
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          # Pull latest MySQL image
-          docker pull mysql:latest
-          
-          # Check if mysql-container already exists
-          if [ "$(docker ps -a -q -f name=mysql-container)" ]; then
-            echo "MySQL container already exists. Restarting..."
-            docker rm -f mysql-container
-          fi
-
-          # Run MySQL container with port mapping
-          docker run --rm --name mysql-container \
-            -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            -p 3306:3306 \
-            -d mysql:latest
-        EOF
+        # Pull the latest MySQL image
+        docker pull mysql:latest
+        # Run the MySQL container with the specified root password
+        docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -d mysql:latest

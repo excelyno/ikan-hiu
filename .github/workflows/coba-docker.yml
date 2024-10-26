@@ -12,7 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Deploy MySQL and nginx
+    - name: Deploy MySQL and nginxkontol
       run: |
         # Pull the latest images
         docker pull mysql:latest

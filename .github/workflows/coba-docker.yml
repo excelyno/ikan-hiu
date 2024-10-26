@@ -1,4 +1,4 @@
-name: Deploy WordPress with Docker
+name: Deploy to VPS
 
 on:
   push:
@@ -13,23 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Copy Docker Compose file to VPS
-        uses: garygrossgarten/github-action-scp@0.9.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          local: "./docker-compose.yml"
-          remote: "/home/${{ secrets.VPS_USER }}/ikan/docker-compose.yml"
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-      - name: SSH to VPS and start Docker Compose
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          script: |
-            cd /home/${{ secrets.VPS_USER }}/ikan
-            sudo docker-compose down || true
-            sudo docker-compose pull
-            sudo docker-compose up -d --remove-orphans
+      - name: Sync files to VPS
+        run: |
+          sudo apt-get install rsync
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./ excel@35.198.232.90:/home/excel/ikan/

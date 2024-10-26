@@ -15,11 +15,4 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      - name: Sync files to VPSyaitu dah
-        run: |
-          sudo apt-get install rsync
-          rsync -avz -e "sudo ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./ excel@35.198.232.90:/home/excel/ikan/
+          sudo wget https://wordpress.org/latest.zip

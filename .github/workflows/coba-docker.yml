@@ -1,4 +1,4 @@
-name: 'deploy-wordpress-nginx-mysql'
+name: 'deploy-nginx-mysql'
 
 on:
   push:
@@ -12,29 +12,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Deploy MySQL, WordPress, and nginx
+    - name: Deploy MySQL and nginx
       run: |
         # Pull the latest images
         docker pull mysql:latest
-        docker pull wordpress:latest
         docker pull nginx:latest
 
         # Run the MySQL container
         docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -d mysql:latest
 
-        # Run the WordPress container linked to the MySQL container
-        docker run --name wordpress-container --link mysql-container:mysql -e WORDPRESS_DB_HOST=mysql:3306 -e WORDPRESS_DB_USER=root -e WORDPRESS_DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -p 8000:8080 -d wordpress:latest
+        # Run the Nginx container
+        docker run --name nginx-container -p 8082:8999 -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
 
-        # Run the Nginx container as a reverse proxy for WordPress
-        docker run --name nginx-container -p 8082:8999 --link wordpress-container:wordpress -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
-
-        # Create an Nginx configuration file for WordPress
+        # Create an Nginx configuration file
         echo "server {
             listen 80;
             server_name your_domain_or_IP;
 
             location / {
-                proxy_pass http://wordpress-container:80;
+                proxy_pass http://localhost:80;
                 proxy_set_header Host \$host;
                 proxy_set_header X-Real-IP \$remote_addr;
                 proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;

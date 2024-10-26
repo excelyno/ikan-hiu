@@ -26,7 +26,7 @@ jobs:
         docker run --name wordpress-container --link mysql-container:mysql -e WORDPRESS_DB_HOST=mysql:3306 -e WORDPRESS_DB_USER=root -e WORDPRESS_DB_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} -p 8000:80 -d wordpress:latest
 
         # Run the Nginx container as a reverse proxy for WordPress
-        docker run --name nginx-container -p 80:80 --link wordpress-container:wordpress -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
+        docker run --name nginx-container -p 8080:80 --link wordpress-container:wordpress -v /etc/nginx/conf.d:/etc/nginx/conf.d -d nginx:latest
 
         # Create an Nginx configuration file for WordPress
         echo "server {

@@ -1,32 +1,48 @@
-version: '3.8'
+version: "3"
 
 services:
-  wordpress:
-    image: wordpress:latest
-    restart: always
-    ports:
-      - "8082:80"  # Ganti port sesuai kebutuhan Anda
-    environment:
-      WORDPRESS_DB_HOST: ikan-hiu-db-1
-      WORDPRESS_DB_USER: wordpress_user
-      WORDPRESS_DB_PASSWORD: wordpress_password
-      WORDPRESS_DB_NAME: wordpress_db
-    volumes:
-      - wordpress_data:/var/www/html
-
-  db:
-    image: mariadb:latest
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password  # Ganti dengan password yang aman
-      MYSQL_DATABASE: wordpress_db
-      MYSQL_USER: wordpress_user
-      MYSQL_PASSWORD: wordpress_password
+  wordpressdb:
+    image: mysql
+    networks:
+      - mynet
     volumes:
       - db_data:/var/lib/mysql
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - wordpressdb
+    image: wordpress
+    ports:
+      - 80:80
+    networks:
+      - mynet
+    volumes:
+      - wordpress_data:/var/www/html
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      placement:
+        constraints: [node.role == manager]
+    environment:
+      WORDPRESS_DB_HOST: wordpressdb
+      WORDPRESS_DB_PASSWORD: wordpress
 
 volumes:
-  wordpress_data:
   db_data:
+  wordpress_data:
+
+networks:
+  mynet:
+    external: true

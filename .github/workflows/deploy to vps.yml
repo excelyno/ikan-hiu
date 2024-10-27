@@ -1,27 +1,29 @@
-name: Deploy WordPress
+name: Deploy WordPress Application
 
 on:
   push:
     branches:
-      - main
+      - main  # Ganti dengan nama branch yang Anda gunakan
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Build and run containers
+      - name: Set up Docker
         run: |
-          docker-compose up -d
-          # Wait for the WordPress container to be ready (optional)
-          sleep 30
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
 
-      - name: Verify WordPress is running
+      - name: Build Docker images
         run: |
-          curl --fail http://localhost:8000 || exit 1
+          docker-compose -f docker-compose.yml build
+
+      - name: Start services
+        run: |
+          docker-compose -f docker-compose.yml up -d

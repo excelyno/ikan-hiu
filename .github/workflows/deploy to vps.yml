@@ -22,9 +22,6 @@ jobs:
       run: |
         aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/docker-compose.yml ./docker-compose.yml
 
-    - name: Download index.html from S3 iya
-      run: |
-        aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/index.html ./index.html
 
     - name: Deploy with Docker Compose
       run: |

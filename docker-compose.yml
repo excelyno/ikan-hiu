@@ -23,7 +23,7 @@ services:
       - wordpressdb
     image: wordpress
     ports:
-      - 80:80
+      - 8082:80
     networks:
       - mynet
     volumes:

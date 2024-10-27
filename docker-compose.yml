@@ -5,13 +5,14 @@ services:
     image: mysql:latest
     container_name: mysql-container
     environment:
-      MYSQL_ROOT_PASSWORD: 123123
+      MYSQL_ROOT_PASSWORD: your123  # Ganti dengan kata sandi yang diinginkan
+      MYSQL_DATABASE: wordpress  # Nama database yang akan dibuat
+      MYSQL_USER: wp_user  # Nama pengguna untuk database
+      MYSQL_PASSWORD: wp_password  # Kata sandi untuk pengguna database
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - wordpress-network
-    ports:
-      - "3306:3306"
 
   wordpress:
     image: wordpress:latest
@@ -19,17 +20,20 @@ services:
     depends_on:
       - mysql
     environment:
-      WORDPRESS_DB_HOST: mysql:3306
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: 123123
+      WORDPRESS_DB_HOST: mysql:3306  # Host database
+      WORDPRESS_DB_USER: wp_user  # Nama pengguna untuk database
+      WORDPRESS_DB_PASSWORD: wp_password  # Kata sandi untuk pengguna database
+      WORDPRESS_DB_NAME: wordpress  # Nama database
     ports:
-      - "8082:80"
+      - "8082:80"  # Akses WordPress melalui port 8000
+    volumes:
+      - wordpress_data:/var/www/html
     networks:
       - wordpress-network
 
-
 volumes:
   mysql_data:
+  wordpress_data:
 
 networks:
   wordpress-network:

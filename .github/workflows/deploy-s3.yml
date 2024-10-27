@@ -18,6 +18,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Ensure S3 bucket is empty
+      run: |
+        aws s3 rm s3://${{ secrets.S3_BUCKET_NAME }}/ --recursive
+
     - name: Upload docker-compose.yml to S3
       run: |
         aws s3 cp docker-compose.yml s3://${{ secrets.S3_BUCKET_NAME }}/
